@@ -26,12 +26,12 @@ android {
     sourceSets {
         main {
             proto {
-                srcDir 'src/main/proto'
+                srcDir("src/main/proto")
             }
-            java.srcDirs = ['src/main/java']
 
-            res.srcDirs = ['src/main/res']
-            manifest.srcFile 'src/main/AndroidManifest.xml'
+            java {
+
+            }
         }
     }
 
@@ -58,13 +58,16 @@ dependencies {
 
 
 protobuf {
-    generatedFilesBaseDir = "$projectDir/src/main/java/proto"
+
     protoc {
         artifact = 'com.google.protobuf:protoc:3.0.0'
     }
 
     plugins {
-        javalite {
+        grpc {
+            artifact = 'io.grpc:protoc-gen-grpc-java:1.1.2'
+        }
+        lite {
             artifact = 'com.google.protobuf:protoc-gen-javalite:3.0.0'
         }
     }
@@ -75,13 +78,15 @@ protobuf {
                 remove java
             }
             task.plugins {
-                javalite {
+                lite {
                     outputSubDir = 'proto'
+                }
+                grpc {
+                    option 'lite'
                 }
             }
         }
-
-
     }
+    generatedFilesBaseDir = "$projectDir/src/main/java/proto"
 }
 

@@ -64,6 +64,15 @@ public class PluginFactory {
        }
     }
 
+    public static int getPluginCount() {
+        int count = 0;
+
+        for(Class<?> ignored : ClassIndex.getAnnotated(Plugin.class)) {
+            count ++;
+        }
+        return count;
+    }
+
     public static Set<Integer> getAvaidlablePlugins() {
        return pInfo.keySet();
     }

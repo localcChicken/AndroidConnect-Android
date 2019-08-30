@@ -34,6 +34,8 @@ public class PluginBase {
         return true;
     }
 
+    public void Received(int dataSize, byte[] data) { }
+
     public void setHandler(Handler handler) {
         this.socketHandler = handler;
     }

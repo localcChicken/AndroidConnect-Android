@@ -36,12 +36,10 @@ public class MainActivity extends AppCompatActivity {
             Message msg = clientHandler.obtainMessage(MessageCodes.CONNECT);
             Bundle data = new Bundle();
             EditText editText = findViewById(R.id.IP);
-            data.putString("host", editText.getText().toString());
+            data.putString("host",editText.getText().toString());
             data.putInt("port", 4908);
             msg.setData(data);
             clientHandler.sendMessage(msg);
-            PluginFactory.initPluginInfo(this, clientHandler);
-            Objects.requireNonNull(PluginFactory.instantinatePlugin(this, clientHandler, 0)).onCreate();
         });
     }
 }
