@@ -77,29 +77,36 @@ public class NotificationPlugin extends PluginBase implements NotificationListen
         builder.setUndertext("AndroidConnect Beta Build!");
 
         Notification.Action[] actions = recv_notification.actions;
+        if(actions != null) {
+            for (Notification.Action action : actions) {
+                String title = action.title.toString();
+                NotificationOuterClass.NotificationActions.Builder actionsBuilder = NotificationOuterClass.NotificationActions.newBuilder();
 
-        for(Notification.Action action : actions){
-            String title = action.title.toString();
-            NotificationOuterClass.NotificationActions.Builder actionsBuilder = NotificationOuterClass.NotificationActions.newBuilder();
+                actionsBuilder.setContent(title);
+                actionsBuilder.setAType("Background");
+                actionsBuilder.setArgs("action=" + title.replace(' ', '_'));
 
-            actionsBuilder.setContent(title);
-            actionsBuilder.setAType("Background");
-            actionsBuilder.setArgs("action=" + title.replace(' ', '_'));
-
-            RepliableNotification repliableNotification = CreateReplNotification(action, sbn.getPackageName());
-            if(repliableNotification != null) {
-                actionsBuilder.setIsRepliable(1);
-                RepliableList.put(title.replace(' ', '_'), repliableNotification);
-            }else{
-                actionsBuilder.setIsRepliable(0);
-                NonRepliableActions.put(title.replace(' ', '_'), action);
+                RepliableNotification repliableNotification = CreateReplNotification(action, sbn.getPackageName());
+                if (repliableNotification != null) {
+                    actionsBuilder.setIsRepliable(1);
+                    RepliableList.put(title.replace(' ', '_'), repliableNotification);
+                } else {
+                    actionsBuilder.setIsRepliable(0);
+                    NonRepliableActions.put(title.replace(' ', '_'), action);
+                }
+                builder.addNActions(actionsBuilder);
             }
-            builder.addNActions(actionsBuilder);
+            Pair<String, String> conv = getConv(recv_notification);
+            builder.setTitle(conv.first == null ? getExtraString(recv_notification.extras, NotificationCompat.EXTRA_TITLE) : conv.first);
+            builder.setText(getConvText(recv_notification, conv));
+            Log.e("Text: ", getConvText(recv_notification, conv));
+        }else {
+            Bundle extras = recv_notification.extras;
+            String bigTEXT = getExtraString(extras, Notification.EXTRA_BIG_TEXT), bigTITLE = getExtraString(extras, Notification.EXTRA_TITLE_BIG);
+
+            builder.setText(bigTEXT == null ? getExtraString(extras, Notification.EXTRA_TEXT) : bigTEXT);
+            builder.setTitle(bigTITLE == null ? getExtraString(extras, Notification.EXTRA_TITLE) : bigTITLE);
         }
-        Pair<String, String> conv = getConv(recv_notification);
-        builder.setTitle(conv.first == null ? getExtraString(recv_notification.extras, NotificationCompat.EXTRA_TITLE) : conv.first);
-        builder.setText(getConvText(recv_notification, conv));
-        Log.e("Text: ", getConvText(recv_notification, conv));
         //Adding everything before this line
         NotificationOuterClass.Notification notification = builder.build();
 
